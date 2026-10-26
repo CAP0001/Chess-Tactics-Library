@@ -1,0 +1,25 @@
+/* --- Стили только для главной страницы --- */
+.main-content {
+    padding: 60px 0;
+}
+
+.hero-section {
+    background-color: #2b2d42;
+    padding: 40px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    text-align: center; /* Сделаем текст по центру для красоты */
+}
+
+.hero-section h1 {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+    color: #edf2f4;
+}
+
+.hero-section h2 {
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: #8d99ae;
+}
