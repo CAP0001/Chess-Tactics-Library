@@ -1,0 +1,79 @@
+{% extends 'header.html' %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+<section class="profile-section">
+    <div class="profile-card">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="avatar-section">
+                <label for="id_avatar">
+                    <div class="profile-avatar">
+                        {% if user.profile.avatar %}
+                            <img src="{{ user.profile.avatar.url }}" alt="Avatar">
+                        {% else %}
+                            <div class="empty-avatar-circle">
+                                {{ user.username|first|upper }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </label>
+                <input type="file" name="avatar" id="id_avatar" style="display:none">
+                <p class="change-photo-text">{% translate "Click to change photo" %}</p>
+            </div>
+
+            <div class="profile-header">
+                <h2>{% translate "User Settings" %}</h2>
+                <div class="user-identity">
+                    <span class="username-display">@{{ user.username|upper }}</span>
+                    
+                    <div class="status-container" style="margin-top: 5px;">
+                        {% with status=user.profile.get_status %}
+                            {% if status %}
+                                <span class="status-badge {{ status.class }}" style="font-weight: bold;">
+                                    [{{ status.name }}]
+                                </span>
+                            {% else %}
+                                <span class="status-default" style="color: #888; font-weight: 500;">
+                                    {% translate "Member" %}
+                                </span>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="form-body">
+                <div class="input-group">
+                    <label>{% translate "Username" %}</label>
+                    <input type="text" name="username" value="{{ user.username }}" class="custom-input">
+                </div>
+
+                <div class="input-group">
+                    <label>{% translate "Email Address" %}</label>
+                    <input type="email" name="email" value="{{ user.email }}" class="custom-input">
+                </div>
+                
+                <div class="stats-info" style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+                    {% translate "Total orders:" %} <strong>{{ user.profile.orders_count }}</strong>
+                </div>
+            </div>
+
+            <button type="submit" class="save-btn">{% translate "Save Changes" %}</button>
+            
+            {% if message %}
+                <p class="success-message" style="color: #27ae60; margin-top: 10px;">{% translate "Profile successfully updated!" %}</p>
+            {% endif %}
+        </form>
+
+        <hr class="divider" style="margin-top: 20px;">
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">{% translate "Log Out from Account" %}</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

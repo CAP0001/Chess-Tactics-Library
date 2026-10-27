@@ -1,0 +1,259 @@
+/* --- Стили профиля (адаптированы под твой theme.js) --- */
+
+.profile-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+}
+
+/* По умолчанию (когда класс light-theme ОТСУТСТВУЕТ — темная тема) */
+.profile-card {
+    background: #1f2937;
+    width: 100%;
+    max-width: 480px;
+    padding: 35px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    box-sizing: border-box;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.profile-card h2 {
+    color: #ffffff;
+}
+
+.profile-card .username-display,
+.profile-card .status-default {
+    color: #9ca3af;
+}
+
+.profile-card .input-group label {
+    color: #f3f4f6;
+}
+
+.profile-card .custom-input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #374151;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #ffffff;
+    background-color: #111827;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.profile-card .custom-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background-color: #1f2937;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+}
+
+.profile-card .stats-info {
+    background-color: #111827;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid #374151;
+    color: #9ca3af;
+}
+
+.profile-card .stats-info strong {
+    color: #ffffff;
+}
+
+.profile-card .divider {
+    border: none;
+    height: 1px;
+    background-color: #374151;
+    margin: 20px 0;
+}
+
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #374151;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #111827;
+}
+
+.empty-avatar-circle {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #9ca3af;
+}
+
+
+/* --- Когда включена светлая тема (класс .light-theme на body) --- */
+body.light-theme .profile-card {
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+body.light-theme .profile-card h2 {
+    color: #111827;
+}
+
+body.light-theme .profile-card .username-display,
+body.light-theme .profile-card .status-default {
+    color: #6b7280;
+}
+
+body.light-theme .profile-card .input-group label {
+    color: #374151;
+}
+
+body.light-theme .profile-card .custom-input {
+    color: #1f2937;
+    background-color: #f9fafb;
+    border-color: #d1d5db;
+}
+
+body.light-theme .profile-card .custom-input:focus {
+    background-color: #ffffff;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+body.light-theme .profile-card .stats-info {
+    background-color: #f9fafb;
+    border-color: #f3f4f6;
+    color: #666;
+}
+
+body.light-theme .profile-card .stats-info strong {
+    color: #111827;
+}
+
+body.light-theme .profile-card .divider {
+    background-color: #e5e7eb;
+}
+
+body.light-theme .profile-avatar {
+    border-color: #f0f2f5;
+    background-color: #e4e6eb;
+}
+
+body.light-theme .empty-avatar-circle {
+    color: #65676b;
+}
+
+
+/* --- Общие элементы (кнопки и текст фото) --- */
+.avatar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.avatar-section label {
+    cursor: pointer;
+}
+
+.profile-avatar {
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.profile-avatar:hover {
+    transform: scale(1.03);
+    border-color: #3b82f6;
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.change-photo-text {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: #3b82f6;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.change-photo-text:hover {
+    text-decoration: underline;
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.user-identity {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    background-color: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+}
+
+.form-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.save-btn {
+    width: 100%;
+    margin-top: 24px;
+    padding: 12px;
+    background-color: #3b82f6;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.save-btn:hover {
+    background-color: #2563eb;
+}
+
+.save-btn:active {
+    transform: scale(0.98);
+}
+
+.logout-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: transparent;
+    color: #ef4444;
+    border: 1px solid #f87171;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+    background-color: rgba(239, 68, 68, 0.15);
+    border-color: #ef4444;
+}
+
+.success-message {
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #34d399;
+}
