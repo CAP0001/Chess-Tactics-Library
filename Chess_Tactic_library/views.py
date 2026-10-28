@@ -1,12 +1,33 @@
 from django.urls import reverse_lazy
 from django.views.generic import FormView, CreateView, ListView, DetailView
 from django.core.paginator import Paginator
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.forms import UserCreationForm
 from .forms import LoginForm, UpdateProfileForm
 from .models import UserProfile
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
+import json
+from django.http import JsonResponse
+from .models import Game
+
+
+def chess_board_view(request):
+  game, created = Game.objects.get_or_create(id=1)
+  return render(request, 'board.html', {'game': game})
+
+
+def update_game(request, game_id):
+  if request.method == 'POST':
+    data = json.loads(request.body)
+    new_fen = data.get('fen')
+
+    game = get_object_or_404(Game, id=1)
+    game.fen = new_fen
+    game.save()
+
+    return JsonResponse({'status': 'success', 'fen': game.fen})
+  return JsonResponse({'status': 'error'}, status=400)
 
 def Main(request):
     return render(request, "main.html")

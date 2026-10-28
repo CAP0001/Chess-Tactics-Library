@@ -12,3 +12,13 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f'User profile {self.user.username}'
+
+class Game(models.Model):
+  fen = models.CharField(
+      max_length=100,
+      default='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+  )
+  updated_at = models.DateTimeField(auto_now=True)
+
+  def __str__(self):
+    return f'Game {self.id} - {self.updated_at}'
