@@ -1,0 +1,56 @@
+{% extends 'header.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/Caro-kan.css' %}">
+
+<div class="chess-tactic-wrapper">
+    <h2>{{ tactic.title }}</h2>
+    <p>{{ tactic.description }}</p>
+
+    <div class="chess-layout">
+        
+        <!-- Левая колонка: Доска -->
+        <div>
+            <div id="board" class="chess-board-container"></div>
+
+            <div class="chess-controls">
+                <button id="prev-btn" class="chess-btn">◀ Назад</button>
+                <span id="step-info" class="chess-step-info">Шаг 0</span>
+                <button id="next-btn" class="chess-btn">Вперед ▶</button>
+            </div>
+        </div>
+
+        <!-- Правая колонка: Ходы и развилки -->
+        <div class="chess-sidebar">
+            <div>
+                <h4>Ходы партии</h4>
+                <div id="moves-list-container" class="moves-list-scroll">
+                    <p class="moves-placeholder">Игра не начата</p>
+                </div>
+            </div>
+
+            <div id="branch-container" class="branch-box">
+                <p class="branch-title">Развилка:</p>
+                <div id="branch-buttons" class="branch-buttons-group"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Безопасно передаем данные из базы в JavaScript через встроенный тег Django -->
+    {{ tactic.moves_sequence|json_script:"tactic-moves-data" }}
+
+    <script>
+        // Читаем JSON без ошибок парсинга кавычек
+        const rawMoves = document.getElementById('tactic-moves-data').textContent;
+        
+        window.TacticConfig = {
+            fen: "{{ tactic.fen }}",
+            solutionMoves: JSON.parse(rawMoves)
+        };
+    </script>
+    
+    <script src="{% static 'js/Caro-kan.js' %}" defer></script>
+</div>
+{% endblock %}

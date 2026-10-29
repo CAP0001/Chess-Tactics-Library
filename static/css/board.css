@@ -1,9 +1,10 @@
-.chess-wrapper {
+/* Уникальный оберточный класс для страницы тактик */
+.tactic-page-wrapper .chess-wrapper {
     text-align: center;
     margin-top: 30px;
 }
 
-.chess-btn {
+.tactic-page-wrapper .chess-btn {
     padding: 10px 20px;
     font-size: 1.1em;
     cursor: pointer;
@@ -14,34 +15,35 @@
     transition: background-color 0.2s;
 }
 
-.chess-btn:hover {
+.tactic-page-wrapper .chess-btn:hover {
     background-color: #45a049;
 }
 
-.chess-container {
+.tactic-page-wrapper .chess-container {
     display: none; 
     margin-top: 20px;
 }
 
-.chess-board-element {
+.tactic-page-wrapper .chess-board-element {
     width: 400px;
     margin: 0 auto;
 }
 
-.chess-status {
+.tactic-page-wrapper .chess-status {
     margin-top: 15px;
     font-weight: bold;
     font-size: 1.1em;
 }
 
 /* Модальное окно для выбора фигуры при превращении пешки */
-#promotion-dialog {
+#promotion-dialog.tactic-promo-modal {
     display: none;
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: white;
+    background: var(--sidebar-bg, #fff);
+    color: var(--text-color, #333);
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
@@ -49,18 +51,18 @@
     text-align: center;
 }
 
-.promotion-pieces {
+.tactic-promo-modal .promotion-pieces {
     display: flex;
     gap: 15px;
     margin-top: 15px;
     justify-content: center;
 }
 
-.promo-piece {
+.tactic-promo-modal .promo-piece {
     font-size: 2em;
     cursor: pointer;
-    background: #f0f0f0;
-    border: 1px solid #ccc;
+    background: rgba(0,0,0,0.05);
+    border: 1px solid var(--border-color, #ccc);
     border-radius: 5px;
     width: 50px;
     height: 50px;
@@ -70,6 +72,6 @@
     transition: background 0.2s;
 }
 
-.promo-piece:hover {
-    background: #e0e0e0;
+.tactic-promo-modal .promo-piece:hover {
+    background: rgba(52, 152, 219, 0.2);
 }

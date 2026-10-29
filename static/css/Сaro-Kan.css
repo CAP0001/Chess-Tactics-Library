@@ -1,0 +1,196 @@
+/* Уникальный оберточный класс для страницы тактик */
+.tactic-page-wrapper .chess-wrapper {
+    text-align: center;
+    margin-top: 30px;
+}
+
+/* Универсальный стиль для всех шахматных кнопок .chess-btn */
+.chess-btn {
+    padding: 10px 20px;
+    font-size: 1.1em;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+
+.chess-btn:hover {
+    background-color: #45a049;
+}
+
+/* Общий контейнер страницы */
+.chess-tactic-wrapper {
+    text-align: left;
+    margin: 20px 40px;
+    color: var(--text-color, #fff);
+}
+
+/* Макет: доска и правая колонка рядом */
+.chess-layout {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+/* Размер шахматной доски (фиксировано 460px) */
+.chess-board-container {
+    width: 460px !important;
+    max-width: 460px !important;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+#board {
+    width: 460px !important;
+    max-width: 460px !important;
+}
+
+#board .board-b7217 {
+    width: 460px !important;
+}
+
+/* Панель управления под доской */
+.chess-controls {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.chess-step-info {
+    font-weight: bold;
+    font-size: 1em;
+}
+
+/* Правая колонка (список ходов и развилки) */
+.chess-sidebar {
+    width: 340px;
+    background: var(--sidebar-bg, rgba(255, 255, 255, 0.05));
+    border: 1px solid var(--border-color, #444);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: left;
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.chess-sidebar h4 {
+    margin-top: 0;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 8px;
+    color: var(--text-color, #fff);
+    font-size: 1.2em;
+}
+
+/* Прокрутка списка ходов */
+.moves-list-scroll {
+    max-height: 300px;
+    overflow-y: auto;
+    font-family: monospace;
+    font-size: 1.15em;
+    line-height: 1.8;
+}
+
+/* Стили для номеров и ходов в строчку */
+.move-number {
+    color: #95a5a6;
+    display: inline-block;
+    width: 35px;
+    font-weight: bold;
+}
+
+.chess-move-item {
+    padding: 2px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--text-color, #fff);
+    transition: background 0.2s;
+    display: inline-block;
+    margin-right: 15px;
+}
+
+.chess-move-item:hover {
+    background-color: rgba(52, 152, 219, 0.3);
+}
+
+.chess-move-active {
+    background-color: #3498db !important;
+    color: #fff !important;
+}
+
+/* Блок выбора развилки внизу правой панели (КНОПКИ СТРОГО СВЕРХУ ВНИЗ) */
+.branch-box {
+    margin-top: 20px;
+    border-top: 2px dashed var(--border-color, #555);
+    padding-top: 12px;
+    display: none;
+}
+
+.branch-title {
+    font-weight: bold;
+    font-size: 0.95em;
+    color: #e67e22;
+    margin-bottom: 10px;
+}
+
+.branch-buttons-group {
+    display: flex;
+    flex-direction: column; /* Принудительно ставим кнопки друг под другом */
+    gap: 8px;
+}
+
+.branch-buttons-group .chess-btn {
+    width: 100%;
+    text-align: left;
+    padding: 10px 14px;
+    box-sizing: border-box;
+}
+
+/* Модальное окно для выбора фигуры при превращении пешки */
+#promotion-dialog.tactic-promo-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--sidebar-bg, #fff);
+    color: var(--text-color, #333);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    z-index: 1000;
+    text-align: center;
+}
+
+.tactic-promo-modal .promotion-pieces {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+    justify-content: center;
+}
+
+.tactic-promo-modal .promo-piece {
+    font-size: 2em;
+    cursor: pointer;
+    background: rgba(0,0,0,0.05);
+    border: 1px solid var(--border-color, #ccc);
+    border-radius: 5px;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.tactic-promo-modal .promo-piece:hover {
+    background: rgba(52, 152, 219, 0.2);
+}

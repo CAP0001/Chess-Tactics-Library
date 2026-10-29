@@ -24,21 +24,21 @@ class Game(models.Model):
     return f'Game {self.id} - {self.updated_at}'
 
 class ChessTactic(models.Model):
-  COLOR_CHOICES = [
-      ('white', 'За белых'),
-      ('black', 'За черных'),
-  ]
+    COLOR_CHOICES = [
+        ('white', 'За белых'),
+        ('black', 'За черных'),
+    ]
 
-  title = models.CharField(max_length=200, verbose_name='Название дебюта')
-  color = models.CharField(
-      max_length=10, choices=COLOR_CHOICES, default='white', verbose_name='Цвет'
-  )
-  fen = models.CharField(
-      max_length=100,
-      default='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
-  )
-  moves_sequence = models.TextField(verbose_name='Последовательность ходов')
-  description = models.TextField(blank=True, verbose_name='Описание')
+    title = models.CharField(max_length=200, verbose_name='Название дебюта')
+    color = models.CharField(
+        max_length=10, choices=COLOR_CHOICES, default='white', verbose_name='Цвет'
+    )
+    fen = models.CharField(
+        max_length=100,
+        default='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+    )
+    moves_sequence = models.JSONField(verbose_name='Последовательность ходов', default=list)
+    description = models.TextField(blank=True, verbose_name='Описание')
 
-  def __str__(self):
-    return f'{self.title} ({self.get_color_display()})'
+    def __str__(self):
+        return f'{self.title} ({self.get_color_display()})'
