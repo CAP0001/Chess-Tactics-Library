@@ -2,17 +2,37 @@
 {% load static %}
 
 {% block content %}
-<div style="text-align: center; margin-top: 30px;">
-    <h1>Шахматная партия</h1>
-    <div id="board" style="width: 400px; margin: 0 auto;"></div>
-    <div id="status" style="margin-top: 15px; font-weight: bold; font-size: 1.1em;">Загрузка игры...</div>
-</div>
+<div class="chess-wrapper" style="max-width: 800px; margin: 0 auto; text-align: center;">
+    <h1>Интерактивные дебюты</h1>
+    <p>Выберите сторону и начните изучение:</p>
 
-<script>
-    window.DjangoChessConfig = {
-        fen: "{{ game.fen }}",
-        csrfToken: "{{ csrf_token }}",
-        updateUrl: "{% url 'update_game' game.id %}"
-    };
-</script>
+    <div style="display: flex; justify-content: space-around; gap: 30px; margin-top: 30px; flex-wrap: wrap;">
+        
+        <!-- Колонка: За белых -->
+        <div style="flex: 1; min-width: 300px; background: rgba(0,0,0,0.03); padding: 20px; border-radius: 8px;">
+            <h3 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">♔ Дебюты за белых</h3>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+                {% for tactic in white_tactics %}
+                {% empty %}
+                    <p style="color: #7f8c8d; font-size: 0.9em;">Пока нет дебютов за белых</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Колонка: За черных -->
+        <div style="flex: 1; min-width: 300px; background: rgba(0,0,0,0.03); padding: 20px; border-radius: 8px;">
+            <h3 style="color: #2c3e50; border-bottom: 2px solid #e74c3c; padding-bottom: 10px;">♚ Дебюты за черных</h3>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+                <!-- Пример для Каро-Канн, который мы делали -->
+                <a href="{% url 'Caro_kan' %}" class="chess-btn" style="text-decoration: none; display: block;">
+                    Защита Каро-Канн
+                </a>
+                {% for tactic in black_tactics %}
+                    <!-- Если есть другие в базе -->
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</div>
 {% endblock %}

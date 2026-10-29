@@ -1,16 +1,41 @@
 document.addEventListener('DOMContentLoaded', function () {
     const gameConfig = window.DjangoChessConfig || {};
-    
-    // Если мы не на странице шахмат, этот конфиг будет пустым — просто выходим из скрипта
     if (!gameConfig.updateUrl) return; 
 
     const initialFen = gameConfig.fen || 'start';
     const csrfToken = gameConfig.csrfToken || '';
     const updateUrl = gameConfig.updateUrl;
 
-    let board = null;
-    const game = new Chess(initialFen);
+    const startBtn = document.getElementById('start-game-btn');
+    const gameContainer = document.getElementById('game-container');
 
+    if (!startBtn) return;
+
+    let board = null;
+    let game = null;
+    let pendingMove = null; // Переменная для сохранения хода пешки до выбора фигуры
+
+    // Запускаем игру по нажатию на кнопку
+    startBtn.addEventListener('click', function () {
+        startBtn.style.display = 'none';
+        gameContainer.style.display = 'block';
+
+        game = new Chess(initialFen);
+
+        const config = {
+            draggable: true,
+            position: initialFen,
+            width: 350,
+            pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
+            onDragStart: onDragStart,
+            onDrop: onDrop,
+            onSnapEnd: onSnapEnd
+        };
+
+        board = Chessboard('board', config);
+        updateStatus();
+    });
+    
     function saveGame() {
         fetch(updateUrl, {
             method: 'POST',
@@ -34,6 +59,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function onDrop(source, target) {
+        const piece = game.get(source);
+        if (piece && piece.type === 'p' && ((piece.color === 'w' && target[1] === '8') || (piece.color === 'b' && target[1] === '1'))) {
+            pendingMove = { from: source, to: target };
+            document.getElementById('promotion-dialog').style.display = 'block';
+            return; 
+        }
+
         const move = game.move({
             from: source,
             to: target,
@@ -45,6 +77,27 @@ document.addEventListener('DOMContentLoaded', function () {
         updateStatus();
         saveGame();
     }
+
+
+    document.querySelectorAll('.promo-piece').forEach(el => {
+        el.addEventListener('click', function () {
+            const promotionPiece = this.getAttribute('data-piece');
+            document.getElementById('promotion-dialog').style.display = 'none';
+
+            if (pendingMove) {
+                const move = game.move({
+                    from: pendingMove.from,
+                    to: pendingMove.to,
+                    promotion: promotionPiece
+                });
+
+                board.position(game.fen());
+                updateStatus();
+                saveGame();
+                pendingMove = null;
+            }
+        });
+    });
 
     function onSnapEnd() {
         board.position(game.fen());
@@ -66,15 +119,4 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         $('#status').text(status);
     }
-
-    const config = {
-        draggable: true,
-        position: initialFen,
-        onDragStart: onDragStart,
-        onDrop: onDrop,
-        onSnapEnd: onSnapEnd
-    };
-
-    board = Chessboard('board', config);
-    updateStatus();
 });

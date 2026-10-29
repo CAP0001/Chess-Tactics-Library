@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 import json
 from django.http import JsonResponse
-from .models import Game
+from .models import Game, ChessTactic
 
 
 def chess_board_view(request):
@@ -73,3 +73,39 @@ class LoginView(FormView):
         else:
             form.add_error(None, 'Невірний логін або пароль')
             return self.form_invalid(form)
+
+def tactic_detail_view(request, pk):
+  tactic = get_object_or_404(ChessTactic, pk=pk)
+  moves_list = [m.strip() for m in tactic.moves_sequence.split(',')]
+  return render(
+      request, 'chess_app/tactic.html', {'tactic': tactic, 'moves_list': moves_list}
+  )
+
+def Caro_kan_view(request):
+  tactic, created = ChessTactic.objects.get_or_create(
+      title='Защита Каро-Канн',
+      defaults={
+          'fen': 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+          'moves_sequence': 'e4,c6,d4,d5',
+          'description': (
+              'Классический полуоткрытый дебют за черных против хода 1.e4.'
+          ),
+      },
+  )
+
+  tactic.fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+  tactic.moves_sequence = 'e4,c6,d4,d5'
+  tactic.save()
+
+  moves_list = [m.strip() for m in tactic.moves_sequence.split(',')]
+  context = {'tactic': tactic, 'moves_list': moves_list}
+  return render(request, 'Caro-kan.html', context)
+def chess_board_view(request):
+
+  white_tactics = ChessTactic.objects.filter(color='white')
+  black_tactics = ChessTactic.objects.filter(color='black')
+
+  context = {'white_tactics': white_tactics, 'black_tactics': black_tactics}
+  return render(
+      request, 'board.html', context
+  )
