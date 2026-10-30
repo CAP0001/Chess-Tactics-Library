@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     const config = window.TacticConfig;
     if (!config) return;
-
     const mainLine = config.solutionMoves || [];
     const initialFen = config.fen || 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
     
@@ -9,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const board = Chessboard('board', {
         draggable: false,
         position: initialFen,
-        width: 460,
+        width: 1,
         pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
     });
 

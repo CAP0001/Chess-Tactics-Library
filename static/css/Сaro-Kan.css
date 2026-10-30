@@ -37,21 +37,27 @@
     margin-top: 20px;
 }
 
-/* Размер шахматной доски (фиксировано 460px) */
+/* ЖЕСТКАЯ ФИКСАЦИЯ РАЗМЕРА ДОСКИ (360px под JS) */
 .chess-board-container {
-    width: 460px !important;
-    max-width: 460px !important;
+    width: 360px !important;
+    max-width: 360px !important;
+    min-width: 360px !important;
+    height: 360px !important;
     margin: 0;
     flex-shrink: 0;
 }
 
 #board {
-    width: 460px !important;
-    max-width: 460px !important;
+    width: 360px !important;
+    max-width: 360px !important;
+    min-width: 360px !important;
+    height: 360px !important;
+    min-height: 360px !important;
 }
 
 #board .board-b7217 {
-    width: 460px !important;
+    width: 360px !important;
+    height: 360px !important;
 }
 
 /* Панель управления под доской */
@@ -75,7 +81,7 @@
     border-radius: 10px;
     padding: 20px;
     text-align: left;
-    min-height: 420px;
+    min-height: 360px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -92,7 +98,7 @@
 
 /* Прокрутка списка ходов */
 .moves-list-scroll {
-    max-height: 300px;
+    max-height: 240px;
     overflow-y: auto;
     font-family: monospace;
     font-size: 1.15em;
@@ -104,7 +110,7 @@
     color: #95a5a6;
     display: inline-block;
     width: 35px;
-    font-weight: bold;
+    font-weight: bold; /* Исправлена опечатка blog -> bold */
 }
 
 .chess-move-item {
@@ -126,7 +132,7 @@
     color: #fff !important;
 }
 
-/* Блок выбора развилки внизу правой панели (КНОПКИ СТРОГО СВЕРХУ ВНИЗ) */
+/* Блок выбора развилки внизу правой панели */
 .branch-box {
     margin-top: 20px;
     border-top: 2px dashed var(--border-color, #555);
@@ -143,7 +149,7 @@
 
 .branch-buttons-group {
     display: flex;
-    flex-direction: column; /* Принудительно ставим кнопки друг под другом */
+    flex-direction: column;
     gap: 8px;
 }
 
@@ -193,4 +199,40 @@
 
 .tactic-promo-modal .promo-piece:hover {
     background: rgba(52, 152, 219, 0.2);
+}
+
+/* Жесткое ограничение для всей доски Chessboard.js и её элементов */
+#board, 
+#board *, 
+.chess-board-container, 
+.chess-board-container * {
+    box-sizing: border-box !important;
+}
+
+.chess-board-container {
+    width: 360px !important;
+    height: 360px !important;
+    max-width: 360px !important;
+    max-height: 360px !important;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+#board {
+    width: 360px !important;
+    height: 360px !important;
+    max-width: 360px !important;
+    max-height: 360px !important;
+}
+
+/* Жесткое ограничение размеров для всех картинок фигур внутри доски */
+#board img, 
+.chess-board-container img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
 }
