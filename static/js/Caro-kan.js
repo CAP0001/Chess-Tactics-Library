@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const board = Chessboard('board', {
         draggable: false,
         position: initialFen,
-        width: 1,
+        width: 360,
         pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
     });
 

@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/Caro-kan.css' %}">
+
 
 <div class="chess-tactic-wrapper">
     <h2>{{ tactic.title }}</h2>
@@ -10,10 +10,12 @@
 
     <div class="chess-layout">
         
-        <!-- Левая колонка: Доска -->
-        <div>
-            <div id="board" class="chess-board-container"></div>
-
+        <!-- Левая колонка: Доска и кнопки -->
+        <div class="chess-board-column">
+            <div style="width: 360px; height: 360px; overflow: hidden; position: relative;">
+                <div id="board" class="chess-board-container"></div>
+            </div>
+        
             <div class="chess-controls">
                 <button id="prev-btn" class="chess-btn">◀ Назад</button>
                 <span id="step-info" class="chess-step-info">Шаг 0</span>
@@ -21,7 +23,7 @@
             </div>
         </div>
 
-        <!-- Правая колонка: Ходы и развилки -->
+        <!-- Правая колонка: Ходы и развилки (ОБЯЗАТЕЛЬНО класс chess-sidebar) -->
         <div class="chess-sidebar">
             <div>
                 <h4>Ходы партии</h4>
@@ -38,13 +40,10 @@
 
     </div>
 
-    <!-- Безопасно передаем данные из базы в JavaScript через встроенный тег Django -->
     {{ tactic.moves_sequence|json_script:"tactic-moves-data" }}
 
     <script>
-        // Читаем JSON без ошибок парсинга кавычек
         const rawMoves = document.getElementById('tactic-moves-data').textContent;
-        
         window.TacticConfig = {
             fen: "{{ tactic.fen }}",
             solutionMoves: JSON.parse(rawMoves)

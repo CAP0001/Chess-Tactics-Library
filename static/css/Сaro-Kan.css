@@ -20,23 +20,6 @@
     background-color: #45a049;
 }
 
-/* Общий контейнер страницы */
-.chess-tactic-wrapper {
-    text-align: left;
-    margin: 20px 40px;
-    color: var(--text-color, #fff);
-}
-
-/* Макет: доска и правая колонка рядом */
-.chess-layout {
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 40px;
-    flex-wrap: wrap;
-    margin-top: 20px;
-}
-
 /* ЖЕСТКАЯ ФИКСАЦИЯ РАЗМЕРА ДОСКИ (360px под JS) */
 .chess-board-container {
     width: 360px !important;
@@ -209,30 +192,45 @@
     box-sizing: border-box !important;
 }
 
-.chess-board-container {
+.chess-board-container, #board {
     width: 360px !important;
     height: 360px !important;
+    position: relative !important;
     max-width: 360px !important;
     max-height: 360px !important;
-    flex-shrink: 0;
+    min-width: 360px !important;
+    min-height: 360px !important;
+    box-sizing: border-box !important;
     overflow: hidden;
+    flex-shrink: 0;
 }
 
-#board {
+#board .board-b7217 {
     width: 360px !important;
     height: 360px !important;
-    max-width: 360px !important;
-    max-height: 360px !important;
 }
 
-/* Жесткое ограничение размеров для всех картинок фигур внутри доски */
-#board img, 
-.chess-board-container img {
-    width: 100% !important;
-    height: 100% !important;
-    max-width: 100% !important;
-    max-height: 100% !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
+#board img {
+    max-width: inherit !important;
+}
+
+.chess-tactic-wrapper {
+    max-width: 820px;
+    margin: 30px auto;
+    text-align: left;
+    color: var(--text-color, #fff);
+}
+
+.chess-layout {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 40px;
+    flex-wrap: nowrap;
+    margin-top: 20px;
+}
+
+.chess-board-column {
+    width: 360px;
+    flex-shrink: 0;
 }
