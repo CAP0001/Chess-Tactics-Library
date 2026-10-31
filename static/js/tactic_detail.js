@@ -4,11 +4,31 @@ document.addEventListener('DOMContentLoaded', function () {
     const mainLine = config.solutionMoves || [];
     const initialFen = config.fen || 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
     
+    // Инициализация звуков в стиле Chess.com
+    const moveSound = new Audio('https://images.chesscomfiles.com/chess-themes/sounds/standard/move-self.mp3');
+    const captureSound = new Audio('https://images.chesscomfiles.com/chess-themes/sounds/standard/capture.mp3');
+
+    // Функция проигрывания звука хода или взятия
+    function playMoveSound(moveResult) {
+        if (!moveResult) return;
+        try {
+            if (moveResult.captured) {
+                captureSound.currentTime = 0;
+                captureSound.play().catch(e => console.log("Аудио заблокировано", e));
+            } else {
+                moveSound.currentTime = 0;
+                moveSound.play().catch(e => console.log("Аудио заблокировано", e));
+            }
+        } catch (err) {
+            console.log("Ошибка воспроизведения звука", err);
+        }
+    }
+
     const game = new Chess(initialFen);
     const board = Chessboard('board', {
         draggable: false,
         position: initialFen,
-        width: 360,
+        width: 720,
         pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
     });
 
@@ -39,8 +59,10 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             let moveStr = typeof step === 'object' ? step.move : step;
-            game.move(moveStr);
-            board.position(game.fen());
+            let moveResult = game.move(moveStr); // Делаем ход и получаем объект результата
+            playMoveSound(moveResult);           // Воспроизводим звук (ход или взятие)
+            
+            board.position(game.fen(), true);    // Плавная анимация для одиночного шага
             
             history.push({ 
                 index: currentIndex, 
@@ -70,42 +92,54 @@ document.addEventListener('DOMContentLoaded', function () {
                 game.load(initialFen);
             }
 
-            board.position(game.fen());
+            board.position(game.fen(), false); // Отключаем анимацию при возврате назад
             updateState();
         } else {
             currentIndex = -1;
             currentLine = mainLine;
             game.load(initialFen);
-            board.position(game.fen());
+            board.position(game.fen(), false); // Отключаем анимацию в начальной позиции
             updateState();
         }
     });
 
-    // Рендер списка ходов с поддержкой клика для перехода
+    // Рендер списка ходов: парами (ход белых и ход черных на одной строке)
     function renderMovesList(line) {
         movesContainer.innerHTML = '';
         let html = '';
         
-        for (let i = 0; i < line.length; i++) {
-            let s = line[i];
-            if (typeof s === 'object' && s.branchChoices) continue; // Пропускаем объект развилки в тексте
+        let moveNum = 1;
+        for (let i = 0; i < line.length; i += 2) {
+            let sWhite = line[i];
+            let sBlack = line[i + 1];
 
-            // Считаем номера ходов (каждые 2 полухода — это 1 полный ход)
-            if (i % 2 === 0) {
-                let moveNum = Math.floor(i / 2) + 1;
-                html += `<div style="margin-bottom: 4px;"><span class="move-number">${moveNum}.</span>`;
+            // Пропускаем объекты развилок, если они попадаются в списке
+            if (typeof sWhite === 'object' && sWhite.branchChoices) continue;
+
+            html += `<div style="margin-bottom: 6px; display: flex; align-items: center;">`;
+            html += `<span class="move-number" style="width: 35px; font-weight: bold;">${moveNum}.</span>`;
+
+            // Ход белых
+            if (sWhite) {
+                let moveStrWhite = typeof sWhite === 'object' ? sWhite.move : sWhite;
+                html += `<span id="move-${i}" class="chess-move-item" data-index="${i}" style="margin-right: 15px; cursor: pointer; padding: 2px 8px; border-radius: 4px;">${moveStrWhite}</span>`;
             }
 
-            let moveStr = typeof s === 'object' ? s.move : s;
-            html += `<span id="move-${i}" class="chess-move-item" data-index="${i}" style="margin-right: 8px; cursor: pointer;">${moveStr}</span>`;
-
-            if (i % 2 !== 1 || i === line.length - 1) {
-                html += `</div>`;
+            // Ход черных (если он есть в текущей линии)
+            if (sBlack) {
+                if (typeof sBlack !== 'object' || !sBlack.branchChoices) {
+                    let moveStrBlack = typeof sBlack === 'object' ? sBlack.move : sBlack;
+                    html += `<span id="move-${i + 1}" class="chess-move-item" data-index="${i + 1}" style="cursor: pointer; padding: 2px 8px; border-radius: 4px;">${moveStrBlack}</span>`;
+                }
             }
+
+            html += `</div>`;
+            moveNum++;
         }
+
         movesContainer.innerHTML = html;
 
-        // Добавляем обработчик клика на каждый ход в списке
+        // Добавляем обработчик клика на каждый ход в списке для прыжка к нему
         document.querySelectorAll('.chess-move-item').forEach(item => {
             item.addEventListener('click', function () {
                 let targetIndex = parseInt(this.getAttribute('data-index'));
@@ -133,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        board.position(game.fen());
+        board.position(game.fen(), false); // Отключаем анимацию при мгновенном прыжке по списку
         branchContainer.style.display = 'none';
         updateState();
     }
