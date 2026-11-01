@@ -75,3 +75,50 @@
 .tactic-promo-modal .promo-piece:hover {
     background: rgba(52, 152, 219, 0.2);
 }
+
+/* Контейнер для выбора дебютов */
+.openings-container {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+/* Карточка "Дебюты за белых" (Светло-фиолетовая гамма) */
+.tactic-page-wrapper .opening-card-white {
+    background-color: #1e1b2e;
+    border-radius: 12px;
+    padding: 20px;
+    width: 320px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.tactic-page-wrapper .opening-card-white h3 {
+    color: #a78bfa;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-align: center;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #8b5cf6;
+    margin-bottom: 15px;
+}
+
+/* Карточка "Дебюты за черных" (Сине-голубая гамма) */
+.tactic-page-wrapper .opening-card-black {
+    background-color: #182232;
+    border-radius: 12px;
+    padding: 20px;
+    width: 320px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.tactic-page-wrapper .opening-card-black h3 {
+    color: #60a5fa;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-align: center;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #3b82f6;
+    margin-bottom: 15px;
+}

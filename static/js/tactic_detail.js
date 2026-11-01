@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const moveSound = new Audio('https://images.chesscomfiles.com/chess-themes/sounds/standard/move-self.mp3');
     const captureSound = new Audio('https://images.chesscomfiles.com/chess-themes/sounds/standard/capture.mp3');
 
-    // Функция проигрывания звука хода или взятия
     function playMoveSound(moveResult) {
         if (!moveResult) return;
         try {
@@ -35,6 +34,10 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentIndex = -1;
     let currentLine = mainLine;
     let history = []; 
+    
+    // Переменные для отслеживания спама
+    let lastClickTime = 0;
+    let spamThreshold = 300; // Если кликают чаще чем раз в 300мс — включаем мгновенный прыжок
 
     const nextBtn = document.getElementById('next-btn');
     const prevBtn = document.getElementById('prev-btn');
@@ -47,8 +50,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     renderMovesList(mainLine);
 
-    // Кнопка «Вперед»
+    // Кнопка «Вперед» со спам-контролем
     nextBtn.addEventListener('click', function () {
+        let now = Date.now();
+        let isSpamming = (now - lastClickTime) < spamThreshold;
+        lastClickTime = now;
+
         if (currentIndex < currentLine.length - 1) {
             currentIndex++;
             let step = currentLine[currentIndex];
@@ -59,10 +66,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             let moveStr = typeof step === 'object' ? step.move : step;
-            let moveResult = game.move(moveStr); // Делаем ход и получаем объект результата
-            playMoveSound(moveResult);           // Воспроизводим звук (ход или взятие)
+            let moveResult = game.move(moveStr); 
+            playMoveSound(moveResult);           
             
-            board.position(game.fen(), true);    // Плавная анимация для одиночного шага
+            // Если спамит — анимация false (мгновенно на место), иначе true (плавно)
+            board.position(game.fen(), !isSpamming);    
             
             history.push({ 
                 index: currentIndex, 
@@ -74,8 +82,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Кнопка «Назад»
+    // Кнопка «Назад» со спам-контролем
     prevBtn.addEventListener('click', function () {
+        let now = Date.now();
+        let isSpamming = (now - lastClickTime) < spamThreshold;
+        lastClickTime = now;
+
         branchContainer.style.display = 'none';
 
         if (history.length > 0) {
@@ -84,62 +96,79 @@ document.addEventListener('DOMContentLoaded', function () {
             if (history.length > 0) {
                 let prevState = history[history.length - 1];
                 currentIndex = prevState.index;
-                currentLine = prevState.line;
+                
+                if (currentLine !== prevState.line) {
+                    currentLine = prevState.line;
+                    renderMovesList(currentLine);
+                }
+
                 game.load(prevState.fen);
             } else {
                 currentIndex = -1;
-                currentLine = mainLine;
+                if (currentLine !== mainLine) {
+                    currentLine = mainLine;
+                    renderMovesList(mainLine);
+                }
                 game.load(initialFen);
             }
 
-            board.position(game.fen(), false); // Отключаем анимацию при возврате назад
+            board.position(game.fen(), !isSpamming); // Мгновенно при спаме, плавно в обычном режиме
             updateState();
         } else {
             currentIndex = -1;
-            currentLine = mainLine;
+            if (currentLine !== mainLine) {
+                currentLine = mainLine;
+                renderMovesList(mainLine);
+            }
             game.load(initialFen);
-            board.position(game.fen(), false); // Отключаем анимацию в начальной позиции
+            board.position(game.fen(), !isSpamming); 
             updateState();
         }
     });
 
-    // Рендер списка ходов: парами (ход белых и ход черных на одной строке)
+    // Рендер списка ходов
     function renderMovesList(line) {
         movesContainer.innerHTML = '';
         let html = '';
         
         let moveNum = 1;
-        for (let i = 0; i < line.length; i += 2) {
-            let sWhite = line[i];
-            let sBlack = line[i + 1];
+        let whiteMove = null;
+        let blackMove = null;
+        let whiteIndex = -1;
+        let blackIndex = -1;
 
-            // Пропускаем объекты развилок, если они попадаются в списке
-            if (typeof sWhite === 'object' && sWhite.branchChoices) continue;
+        let cleanMoves = [];
+        for (let i = 0; i < line.length; i++) {
+            let s = line[i];
+            if (typeof s === 'object' && s.branchChoices) continue;
+            cleanMoves.push({
+                move: typeof s === 'object' ? s.move : s,
+                originalIndex: i
+            });
+        }
 
-            html += `<div style="margin-bottom: 6px; display: flex; align-items: center;">`;
-            html += `<span class="move-number" style="width: 35px; font-weight: bold;">${moveNum}.</span>`;
-
-            // Ход белых
-            if (sWhite) {
-                let moveStrWhite = typeof sWhite === 'object' ? sWhite.move : sWhite;
-                html += `<span id="move-${i}" class="chess-move-item" data-index="${i}" style="margin-right: 15px; cursor: pointer; padding: 2px 8px; border-radius: 4px;">${moveStrWhite}</span>`;
+        for (let i = 0; i < cleanMoves.length; i++) {
+            if (i % 2 === 0) {
+                whiteMove = cleanMoves[i].move;
+                whiteIndex = cleanMoves[i].originalIndex;
+                blackMove = null;
+                blackIndex = -1;
+            } else {
+                blackMove = cleanMoves[i].move;
+                blackIndex = cleanMoves[i].originalIndex;
+                
+                html += renderRow(moveNum, whiteMove, whiteIndex, blackMove, blackIndex);
+                moveNum++;
+                whiteMove = null;
             }
+        }
 
-            // Ход черных (если он есть в текущей линии)
-            if (sBlack) {
-                if (typeof sBlack !== 'object' || !sBlack.branchChoices) {
-                    let moveStrBlack = typeof sBlack === 'object' ? sBlack.move : sBlack;
-                    html += `<span id="move-${i + 1}" class="chess-move-item" data-index="${i + 1}" style="cursor: pointer; padding: 2px 8px; border-radius: 4px;">${moveStrBlack}</span>`;
-                }
-            }
-
-            html += `</div>`;
-            moveNum++;
+        if (whiteMove !== null) {
+            html += renderRow(moveNum, whiteMove, whiteIndex, null, -1);
         }
 
         movesContainer.innerHTML = html;
 
-        // Добавляем обработчик клика на каждый ход в списке для прыжка к нему
         document.querySelectorAll('.chess-move-item').forEach(item => {
             item.addEventListener('click', function () {
                 let targetIndex = parseInt(this.getAttribute('data-index'));
@@ -148,7 +177,24 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Функция прыжка к конкретному ходу по клику
+    function renderRow(moveNum, wMove, wIdx, bMove, bIdx) {
+        let rowHtml = `<div style="margin-bottom: 6px; display: flex; align-items: center;">`;
+        rowHtml += `<span class="move-number" style="width: 35px; font-weight: bold;">${moveNum}.</span>`;
+
+        if (wMove) {
+            rowHtml += `<span id="move-${wIdx}" class="chess-move-item" data-index="${wIdx}" style="margin-right: 15px; cursor: pointer; padding: 2px 8px; border-radius: 4px;">${wMove}</span>`;
+        } else {
+            rowHtml += `<span style="margin-right: 35px; display: inline-block;">...</span>`;
+        }
+
+        if (bMove) {
+            rowHtml += `<span id="move-${bIdx}" class="chess-move-item" data-index="${bIdx}" style="cursor: pointer; padding: 2px 8px; border-radius: 4px;">${bMove}</span>`;
+        }
+
+        rowHtml += `</div>`;
+        return rowHtml;
+    }
+
     function jumpToStep(targetIndex) {
         game.load(initialFen);
         history = [];
@@ -167,12 +213,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        board.position(game.fen(), false); // Отключаем анимацию при мгновенном прыжке по списку
+        board.position(game.fen(), false); 
         branchContainer.style.display = 'none';
         updateState();
     }
 
-    // Показ кнопок развилки (вертикально)
     function showBranches(choices) {
         branchContainer.style.display = 'block';
         branchButtons.innerHTML = '';
@@ -183,8 +228,11 @@ document.addEventListener('DOMContentLoaded', function () {
             btn.innerText = branch.name;
             btn.onclick = function () {
                 branchContainer.style.display = 'none';
-                currentLine = branch.moves;
-                currentIndex = -1;
+                
+                let branchStartIndex = currentIndex;
+                let basePart = currentLine.slice(0, branchStartIndex + 1);
+                currentLine = basePart.concat(branch.moves);
+                
                 renderMovesList(currentLine);
                 nextBtn.click();
             };
@@ -192,7 +240,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Обновление подсветки
     function updateState() {
         stepInfo.innerText = currentIndex === -1 ? "Шаг 0" : `Шаг ${currentIndex + 1} из ${currentLine.length}`;
 
