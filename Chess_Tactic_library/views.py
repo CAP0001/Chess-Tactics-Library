@@ -4,7 +4,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.forms import UserCreationForm
 from .forms import LoginForm, UpdateProfileForm
-from .models import UserProfile
+from .models import UserProfile, ChessPuzzles
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 import json
@@ -88,15 +88,19 @@ class TacticDetailView(DetailView):
     template_name = 'tactic_detail.html'
     context_object_name = 'tactic'
 
+class TacticPuzzlesView(DetailView):
+    model = ChessPuzzles
+    template_name = 'tactic_puzzles.html'
+    context_object_name = 'tactic'
+
 def chess_board_view(request):
+    white_tactics = ChessTactic.objects.filter(color='white')
+    black_tactics = ChessTactic.objects.filter(color='black')
 
-  white_tactics = ChessTactic.objects.filter(color='white')
-  black_tactics = ChessTactic.objects.filter(color='black')
-
-  context = {'white_tactics': white_tactics, 'black_tactics': black_tactics}
-  return render(
-      request, 'board.html', context
-  )
-
+    context = {
+        'white_tactics': white_tactics, 
+        'black_tactics': black_tactics
+    }
+    return render(request, 'board.html', context)
 # CAP
 # 5455

@@ -122,3 +122,76 @@
     border-bottom: 2px solid #3b82f6;
     margin-bottom: 15px;
 }
+
+.chess-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.chess-columns {
+    display: flex;
+    justify-content: space-around;
+    gap: 30px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.chess-column {
+    flex: 1;
+    min-width: 300px;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.white-side {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.black-side {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.column-title {
+    padding-bottom: 10px;
+    margin-top: 0;
+}
+
+.white-side .column-title {
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+}
+
+.black-side .column-title {
+    color: #2de580;
+    border-bottom: 2px solid #4a45c5;
+}
+
+.chess-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.chess-btn {
+    text-decoration: none;
+    display: block;
+    /* Если у вас уже есть класс .chess-btn, здесь можно настроить его внешний вид (цвет кнопки, фон, отступы и т.д.) */
+}
+
+.white-side .chess-list {
+    gap: 10px; /* Сохранили оригинальный отступ для белых (10px вместо 15px) */
+}
+
+.chess-empty {
+    font-size: 0.9em;
+}
+
+.white-side .chess-empty {
+    color: #7f8c8d;
+}
+
+.black-side .chess-empty {
+    color: #8d99ae;
+}
