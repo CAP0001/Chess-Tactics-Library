@@ -7,10 +7,19 @@
 <div class="chess-tactic-wrapper">
     <div class="chess-content-container">
         <h2>{{ tactic.title }}</h2>
-        <p>{{ tactic.description }}</p>
-        <a href="{% url 'tactic_puzzles' tactic.id %}" class="chess-btn puzzle-link-btn" style="background-color: #8b5cf6; text-decoration: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; color: white;">
-            Перейти к задачам
-        </a>
+        <div style="margin-top: 20px;">
+            {% with puzzle=tactic.puzzles.first %}
+                {% if puzzle %}
+                    <a href="{% url 'tactic_puzzles' puzzle.id %}" class="puzzle-sidebar-btn">
+                        Перейти к задачам
+                    </a>
+                {% else %}
+                    <a href="#" class="puzzle-sidebar-btn" style="opacity: 0.6; cursor: not-allowed;" onclick="alert('Для этого дебюта задачи еще не добавлены'); return false;">
+                        Задачи скоро появятся
+                    </a>
+                {% endif %}
+            {% endwith %}
+        </div>
 
         <div class="chess-layout">
             

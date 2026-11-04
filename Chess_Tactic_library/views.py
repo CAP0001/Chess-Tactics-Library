@@ -91,7 +91,7 @@ class TacticDetailView(DetailView):
 class TacticPuzzlesView(DetailView):
     model = ChessPuzzles
     template_name = 'tactic_puzzles.html'
-    context_object_name = 'tactic'
+    context_object_name = 'puzzle'
 
 def chess_board_view(request):
     white_tactics = ChessTactic.objects.filter(color='white')

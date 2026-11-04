@@ -48,7 +48,14 @@ class ChessPuzzles(models.Model):
         ('white', 'За белых'),
         ('black', 'За черных'),
     ]
-    
+    tactic = models.ForeignKey(
+    ChessTactic, 
+    on_delete=models.SET_NULL, 
+    null=True, 
+    blank=True, 
+    related_name='puzzles', 
+    verbose_name='Дебют'
+)
     TASK_TYPE_CHOICES = [
         ('opening', 'Дебют / Теория'),
         ('tactic', 'Тактическая задача / Закрепление'),

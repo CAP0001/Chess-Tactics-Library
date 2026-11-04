@@ -2,37 +2,40 @@
 {% load static %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/tactic_detail.css' %}">
-
+<link rel="stylesheet" href="{% static 'css/tactic_puzzles.css' %}">
 <div class="chess-tactic-wrapper">
     <div class="chess-content-container">
-        <h2>{{ tactic.title }}</h2>
-        <p>{{ tactic.description }}</p>
+        <h2>{{ puzzle.title }}</h2>
+        <!-- Заменяем отсутствующий description на hint или убираем -->
+        {% if puzzle.hint %}
+            <p>Подсказка: {{ puzzle.hint }}</p>
+        {% endif %}
 
         <div class="chess-layout">
             
+            <!-- Левая колонка: Шахматная доска и кнопки управления -->
             <div class="chess-board-column">
                 <div class="chess-board-wrapper-inner">
-                    <div id="board" class="chess-board-container"></div>
+                    <div id="board" class="chess-board-container" style="width: 400px; margin: 0 auto;"></div>
                 </div>
             
-                <div class="chess-controls">
+                <div class="chess-controls" style="margin-top: 15px; display: flex; justify-content: center; gap: 10px; align-items: center;">
                     <button id="prev-btn" class="chess-btn">◀ Назад</button>
                     <span id="step-info" class="chess-step-info">Шаг 0</span>
                     <button id="next-btn" class="chess-btn">Вперед ▶</button>
                 </div>
             </div>
 
-            <!-- Правая колонка: Ходы и развилки (теперь строго справа) -->
+            <!-- Правая колонка: Ходы -->
             <div class="chess-sidebar">
                 <div>
-                    <h4>Ходы партии</h4>
+                    <h4>Ходы задачи</h4>
                     <div id="moves-list-container" class="moves-list-scroll">
                         <p class="moves-placeholder">Игра не начата</p>
                     </div>
                 </div>
 
-                <div id="branch-container" class="branch-box">
+                <div id="branch-container" class="branch-box" style="display: none;">
                     <p class="branch-title">Развилка:</p>
                     <div id="branch-buttons" class="branch-buttons-group"></div>
                 </div>
@@ -41,16 +44,21 @@
         </div>
     </div>
 
-    {{ tactic.moves_sequence|json_script:"tactic-moves-data" }}
+    <!-- Передаем данные из модели ChessPuzzles в JS -->
+    {{ puzzle.moves_sequence|json_script:"tactic-moves-data" }}
 
     <script>
-        const rawMoves = document.getElementById('tactic-moves-data').textContent;
         window.TacticConfig = {
-            fen: "{{ tactic.fen }}",
-            solutionMoves: JSON.parse(rawMoves)
+            fen: "{{ puzzle.fen }}",
+            solutionMoves: JSON.parse(document.getElementById('tactic-moves-data').textContent || '[]')
         };
     </script>
     
-    <script src="{% static 'js/tactic_detail.js' %}" defer></script>
+    <!-- Подключаем chessboard.js, chess.js (если нужны) и скрипт логики -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard.js/1.0.0/chessboard-1.0.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard.js/1.0.0/chessboard-1.0.0.min.css">
+    
+    <script src="{% static 'js/tactic_puzzles.js' %}" defer></script>
 </div>
 {% endblock %}
