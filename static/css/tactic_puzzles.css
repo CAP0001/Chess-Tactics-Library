@@ -1,4 +1,3 @@
-
 /* --- Переменные темы (Автоматические цвета для светлой/темной темы) --- */
 :root {
     --sidebar-bg: rgba(255, 255, 255, 0.05);
@@ -240,12 +239,14 @@ body.light-theme, html.light-theme {
     background-color: rgba(0, 0, 0, 0.12) !important;
 }
 
-/* Аккуратные точки и кольца Lichess */
+/* --- Аккуратные точки и кольца Lichess (исправленные) --- */
 .highlight-hint {
     position: relative;
 }
 
-.highlight-hint:empty::after {
+/* Маленькая точка для пустого поля (строго через классы подсказок Lichess) */
+.highlight-hint.hint-empty::after,
+.move-dest::after {
     content: "";
     position: absolute;
     top: 50%;
@@ -258,7 +259,9 @@ body.light-theme, html.light-theme {
     pointer-events: none;
 }
 
-.highlight-hint:not(:empty)::after {
+/* Кольцо для взятия фигуры */
+.highlight-hint.hint-capture::after,
+.capture-dest::after {
     content: "";
     position: absolute;
     top: 0;

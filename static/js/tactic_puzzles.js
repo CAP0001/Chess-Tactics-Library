@@ -6,7 +6,13 @@ document.addEventListener('DOMContentLoaded', function () {
     
     const moveSound = new Audio('https://images.chesscomfiles.com/chess-themes/sounds/standard/move-self.mp3');
     const captureSound = new Audio('https://images.chesscomfiles.com/chess-themes/sounds/standard/capture.mp3');
-
+    // Проверяем сохраненные решения при загрузке
+    document.querySelectorAll('.puzzle-square-indicator').forEach(el => {
+        const href = el.getAttribute('href');
+        if (localStorage.getItem('puzzle_solved_' + href) === 'true') {
+            el.style.backgroundColor = '#4CAF50';
+        }
+    });
     function playMoveSound(moveResult) {
         if (!moveResult) return;
         try {
@@ -75,11 +81,19 @@ document.addEventListener('DOMContentLoaded', function () {
     function showHintsForSquare(square) {
         removeHighlights();
         selectedSquare = square;
-        highlightSquare(square);
-
+        // Убрали подсветку выбранной клетки, оставили только логику подсказок
+        
         const moves = game.moves({ square: square, verbose: true });
         moves.forEach(m => {
-            $('#board .square-' + m.to).addClass('highlight-hint');
+            const $targetSquare = $('#board .square-' + m.to);
+            // Проверяем, есть ли на целевой клетке фигура противника (взятие)
+            const targetPiece = game.get(m.to);
+            
+            if (targetPiece) {
+                $targetSquare.addClass('highlight-hint hint-capture');
+            } else {
+                $targetSquare.addClass('highlight-hint hint-empty');
+            }
         });
     }
 
@@ -170,6 +184,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (statusBanner) {
                     statusBanner.innerText = '🎉 Задача успешно решена!';
                     statusBanner.style.color = '#4CAF50';
+                }
+                
+                // Сохраняем в localStorage браузера, что эта задача решена
+                localStorage.setItem('puzzle_solved_' + window.location.pathname, 'true');
+                
+                // Красим текущий квадратик слева в зеленый
+                const activeSquareIndicator = document.querySelector('.puzzle-square-indicator.current-puzzle');
+                if (activeSquareIndicator) {
+                    activeSquareIndicator.style.backgroundColor = '#4CAF50';
                 }
                 return;
             }
@@ -274,6 +297,8 @@ document.addEventListener('DOMContentLoaded', function () {
             stepInfo.innerText = isPuzzleSolved ? "Решено!" : `Ход за: ${game.turn() === 'w' ? 'Белых' : 'Черных'}`;
         }
     }
+
+    
 
     updateState();
 });
