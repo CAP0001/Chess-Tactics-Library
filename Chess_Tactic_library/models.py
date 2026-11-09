@@ -1,17 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
-
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
-    orders_count = models.PositiveIntegerField(default=0) 
-
-    class Meta:
-        db_table = 'chess_tactic_library_userprofile'
+from django import forms
+class UserProfile(models.Model): # Убедитесь, что класс называется именно UserProfile
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
+    move_highlight_color = models.CharField(max_length=7, default='#76cc26')
+    completed_move_color = models.CharField(max_length=7, default='#76cc26')
 
     def __str__(self):
-        return f'User profile {self.user.username}'
+        return self.user.username
 
 class Game(models.Model):
   fen = models.CharField(

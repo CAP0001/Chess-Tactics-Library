@@ -1,7 +1,7 @@
 from django.urls import reverse_lazy
 from django.views.generic import FormView, CreateView, ListView, DetailView
 from django.core.paginator import Paginator
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from .forms import LoginForm, UpdateProfileForm
 from .models import UserProfile, ChessPuzzles
@@ -43,20 +43,25 @@ def Main(request):
 @login_required(login_url='/login/')
 def profile(request):
     message = ""
-    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
 
     if request.method == "POST":
         form = UpdateProfileForm(request.POST, request.FILES, instance=request.user)
 
         if form.is_valid():
+            message = "Profile saved successfully!"
             form.save()
-            message = "Profile successfully saved!"
+            user_profile.refresh_from_db()
+            
             form = UpdateProfileForm(instance=request.user)
     else:
         form = UpdateProfileForm(instance=request.user)
 
-
-    return render(request, "profile.html", {"form": form, "message": message})
+    return render(request, "profile.html", {
+        "form": form,
+        "message": message,
+        "user_profile": user_profile
+    })
     
 def logout_view(request):
     logout(request)

@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
     
     const moveSound = new Audio('https://images.chesscomfiles.com/chess-themes/sounds/standard/move-self.mp3');
     const captureSound = new Audio('https://images.chesscomfiles.com/chess-themes/sounds/standard/capture.mp3');
+    
     // Проверяем сохраненные решения при загрузке
     document.querySelectorAll('.puzzle-square-indicator').forEach(el => {
         const href = el.getAttribute('href');
@@ -13,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
             el.style.backgroundColor = '#4CAF50';
         }
     });
+
     function playMoveSound(moveResult) {
         if (!moveResult) return;
         try {
@@ -58,6 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
             selectedSquare = null;
             removeHighlights();
             board.position(game.fen());
+            updateLastMoveHighlight(null, null);
             renderPlayedMoves([]);
             if (statusBanner) {
                 statusBanner.innerText = '';
@@ -68,43 +71,54 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     renderPlayedMoves([]);
-
+    
     function highlightSquare(square) {
         const $square = $('#board .square-' + square);
         $square.addClass('highlight-selected');
     }
 
     function removeHighlights() {
-        $('#board .square-55d63').removeClass('highlight-selected highlight-hint');
+        $('#board .square-55d63').removeClass('highlight-selected hint-empty hint-capture');
     }
 
     function showHintsForSquare(square) {
         removeHighlights();
         selectedSquare = square;
-        // Убрали подсветку выбранной клетки, оставили только логику подсказок
         
         const moves = game.moves({ square: square, verbose: true });
         moves.forEach(m => {
             const $targetSquare = $('#board .square-' + m.to);
-            // Проверяем, есть ли на целевой клетке фигура противника (взятие)
             const targetPiece = game.get(m.to);
             
             if (targetPiece) {
-                $targetSquare.addClass('highlight-hint hint-capture');
+                $targetSquare.addClass('hint-capture');
             } else {
-                $targetSquare.addClass('highlight-hint hint-empty');
+                $targetSquare.addClass('hint-empty');
             }
         });
     }
 
-    // Логика клика по клетке (выбор и перемещение)
+    // Функция обновления подсветки последнего хода
+    function updateLastMoveHighlight(fromSquare, toSquare) {
+        document.querySelectorAll('.square-55d63, square').forEach(el => {
+            el.classList.remove('highlight-last-move');
+        });
+
+        if (!fromSquare || !toSquare) return;
+
+        const fromEl = document.querySelector(`.square-${fromSquare}`);
+        const toEl = document.querySelector(`.square-${toSquare}`);
+
+        if (fromEl) fromEl.classList.add('highlight-last-move');
+        if (toEl) toEl.classList.add('highlight-last-move');
+    }
+
     function onSquareClick(square) {
         if (isPuzzleSolved) return;
 
         const piece = game.get(square);
         const turn = game.turn();
 
-        // Если клетка содержит фигуру игрока — выбираем её
         if (piece && ((turn === 'w' && piece.color === 'w') || (turn === 'b' && piece.color === 'b'))) {
             if (selectedSquare === square) {
                 selectedSquare = null;
@@ -115,7 +129,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Если фигура уже была выбрана, клик на другую клетку пытается сделать ход
         if (selectedSquare) {
             const move = game.move({
                 from: selectedSquare,
@@ -154,10 +167,6 @@ document.addEventListener('DOMContentLoaded', function () {
     function processPlayerMove(move) {
         const expectedMoveStr = solutionMoves[currentStepIndex];
 
-        // Отладка для проверки ходов в консоли (F12)
-        console.log("Сделан ход:", move.san, "| Координаты:", move.from + move.to, "| Ожидался в базе:", expectedMoveStr);
-
-        // Надежное сравнение хода с учетом возможных знаков шаха/мата (+) и взятия (x)
         const cleanMoveSan = move.san.replace(/[+#!?]/g, '');
         const cleanExpected = expectedMoveStr ? expectedMoveStr.replace(/[+#!?]/g, '') : '';
 
@@ -172,6 +181,8 @@ document.addEventListener('DOMContentLoaded', function () {
             playMoveSound(move);
             currentStepIndex++;
             
+            updateLastMoveHighlight(move.from, move.to);
+
             renderPlayedMoves(solutionMoves.slice(0, currentStepIndex));
             if (statusBanner) {
                 statusBanner.innerText = '✅ Правильно!';
@@ -186,10 +197,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     statusBanner.style.color = '#4CAF50';
                 }
                 
-                // Сохраняем в localStorage браузера, что эта задача решена
                 localStorage.setItem('puzzle_solved_' + window.location.pathname, 'true');
                 
-                // Красим текущий квадратик слева в зеленый
                 const activeSquareIndicator = document.querySelector('.puzzle-square-indicator.current-puzzle');
                 if (activeSquareIndicator) {
                     activeSquareIndicator.style.backgroundColor = '#4CAF50';
@@ -197,13 +206,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            // Автоматический ответ противника
+            // Автоматический ответ противника с плавной анимацией
             setTimeout(() => {
                 const opponentMoveStr = solutionMoves[currentStepIndex];
                 const computerMove = game.move(opponentMoveStr);
+                
                 if (computerMove) {
                     playMoveSound(computerMove);
-                    board.position(game.fen());
+                    board.position(game.fen(), true);
+                    
+                    setTimeout(() => {
+                        updateLastMoveHighlight(computerMove.from, computerMove.to);
+                    }, 250);
+                    
                     currentStepIndex++;
                     
                     renderPlayedMoves(solutionMoves.slice(0, currentStepIndex));
@@ -217,7 +232,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     }
                 }
-            }, 300);
+            }, 400);
 
         } else {
             game.undo();
@@ -229,6 +244,32 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             return 'snapback';
         }
+    }
+
+    // Вспомогательная функция для перевода HEX в RGBA с полупрозрачностью
+    function hexToRgbA(hex, alpha = 0.42) {
+        let c = hex.replace('#', '');
+        if (c.length === 3) {
+            c = c.split('').map(char => char + char).join('');
+        }
+        const num = parseInt(c, 16);
+        return `rgba(${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}, ${alpha})`;
+    }
+
+    // Обработчик выбора цвета подсветки хода
+    const colorPicker = document.getElementById('move-color-picker');
+    if (colorPicker) {
+        const savedColor = localStorage.getItem('custom_move_highlight_color');
+        if (savedColor) {
+            colorPicker.value = savedColor;
+            document.documentElement.style.setProperty('--last-move-color', hexToRgbA(savedColor, 0.42));
+        }
+
+        colorPicker.addEventListener('input', function (e) {
+            const hexColor = e.target.value;
+            document.documentElement.style.setProperty('--last-move-color', hexToRgbA(hexColor, 0.42));
+            localStorage.setItem('custom_move_highlight_color', hexColor);
+        });
     }
 
     function renderPlayedMoves(playedList) {
@@ -297,8 +338,6 @@ document.addEventListener('DOMContentLoaded', function () {
             stepInfo.innerText = isPuzzleSolved ? "Решено!" : `Ход за: ${game.turn() === 'w' ? 'Белых' : 'Черных'}`;
         }
     }
-
-    
 
     updateState();
 });

@@ -61,11 +61,20 @@
                     {% translate "Total debutes counter:" %} <strong>{{ user.profile.orders_count }}</strong>
                 </div>
             </div>
+            <div class="color-picker-container" style="margin-top: 15px; display: flex; align-items: center; justify-content: space-between;">
+                <label for="completed-move-color-picker" style="font-size: 0.95em; font-weight: bold;">{% translate "Цвет подсветки сделаного хода:" %}</label>
+                <input type="color" name="completed_move_color" id="completed-move-color-picker" value="{{ user.profile.completed_move_color }}" style="cursor: pointer; border: none; background: transparent; width: 32px; height: 32px;">
+            </div>
+            
+            <div class="color-picker-container" style="margin-top: 15px; display: flex; align-items: center; justify-content: space-between;">
+                <label for="move-color-picker" style="font-size: 0.95em; font-weight: bold;">Цвет подсветки хода:</label>
+                <input type="color" name="move_highlight_color" id="move-color-picker" value="{{ user.profile.move_highlight_color }}" style="cursor: pointer; border: none; background: transparent; width: 32px; height: 32px;">
+            </div>
 
             <button type="submit" class="save-btn">{% translate "Save Changes" %}</button>
             
             {% if message %}
-                <p class="success-message" style="color: #27ae60; margin-top: 10px;">{% translate "Profile successfully updated!" %}</p>
+                <p class="success-message" style="color: #27ae60; margin-top: 10px;">{% translate "Profile saved successfully!" %}</p>
             {% endif %}
         </form>
 
