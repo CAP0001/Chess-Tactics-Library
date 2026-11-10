@@ -3,6 +3,15 @@
 
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/tactic_puzzles.css' %}">
+
+<!-- Динамические цвета из профиля пользователя -->
+<style>
+    :root {
+        --last-move-color: {{ request.user.profile.completed_move_color|default:'#5eff24' }};
+        --hint-color: {{ request.user.profile.move_highlight_color|default:'#5eff24' }};
+    }
+</style>
+
 <div class="chess-tactic-wrapper">
     <div class="chess-content-container">
         <h2>{{ puzzle.title }}</h2>
@@ -12,21 +21,21 @@
 
         <div class="chess-layout" style="display: flex; gap: 20px; align-items: flex-start; justify-content: center;">
             
-        <!-- Слева: Список задач (маленькие квадратики) -->
-        <div class="puzzles-sidebar-left" style="background-color: var(--scroll-bg, #1e1e2d); padding: 15px; border-radius: 8px; width: 180px; min-height: 400px; box-sizing: border-box;">
-            <h4 style="margin-top: 0; font-size: 1em; color: var(--text-color, #fff); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">Список задач</h4>
-            <div class="puzzles-grid" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;">
-                {% for p in puzzle.tactic.puzzles.all %}
-                    <a href="{% url 'tactic_puzzles' p.pk %}" 
-                    title="{{ p.title }}"
-                    class="puzzle-square-indicator {% if p.pk == puzzle.pk %}current-puzzle{% endif %}"
-                    style="width: 24px; height: 24px; border-radius: 4px; display: inline-block; background-color: {% if p.is_solved %}#4CAF50{% else %}#555{% endif %}; border: {% if p.pk == puzzle.pk %}2px solid #fff{% else %}none{% endif %}; cursor: pointer; transition: transform 0.2s;">
-                    </a>
-                {% empty %}
-                    <p style="font-size: 0.85em; color: #888;">Нет других задач</p>
-                {% endfor %}
+            <!-- Слева: Список задач (маленькие квадратики) -->
+            <div class="puzzles-sidebar-left" style="background-color: var(--scroll-bg, #1e1e2d); padding: 15px; border-radius: 8px; width: 180px; min-height: 400px; box-sizing: border-box;">
+                <h4 style="margin-top: 0; font-size: 1em; color: var(--text-color, #fff); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">Список задач</h4>
+                <div class="puzzles-grid" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;">
+                    {% for p in puzzle.tactic.puzzles.all %}
+                        <a href="{% url 'tactic_puzzles' p.pk %}" 
+                        title="{{ p.title }}"
+                        class="puzzle-square-indicator {% if p.pk == puzzle.pk %}current-puzzle{% endif %}"
+                        style="width: 24px; height: 24px; border-radius: 4px; display: inline-block; background-color: {% if p.is_solved %}#4CAF50{% else %}#555{% endif %}; border: {% if p.pk == puzzle.pk %}2px solid #fff{% else %}none{% endif %}; cursor: pointer; transition: transform 0.2s;">
+                        </a>
+                    {% empty %}
+                        <p style="font-size: 0.85em; color: #888;">Нет других задач</p>
+                    {% endfor %}
+                </div>
             </div>
-        </div>
 
             <!-- Центральная колонка: Шахматная доска и кнопки управления -->
             <div class="chess-board-column">
@@ -61,13 +70,6 @@
 
     <!-- Данные для JS -->
     {{ puzzle.moves_sequence|json_script:"tactic-moves-data" }}
-    <script>
-        window.TacticConfig = {
-            fen: "{{ tactic.fen }}",
-            solutionMoves: {{ solution_moves|safe }},
-            userMoveColor: "{{ request.user.profile.move_highlight_color|default:'#76cc26' }}"
-        };
-    </script>
     <script>
         window.TacticConfig = {
             fen: "{{ puzzle.fen }}",

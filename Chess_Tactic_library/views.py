@@ -46,16 +46,14 @@ def profile(request):
     user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
 
     if request.method == "POST":
-        form = UpdateProfileForm(request.POST, request.FILES, instance=request.user)
-
+        form = UpdateProfileForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
-            message = "Profile saved successfully!"
             form.save()
+            message = "Profile saved successfully!"
             user_profile.refresh_from_db()
-            
-            form = UpdateProfileForm(instance=request.user)
+            form = UpdateProfileForm(user=request.user)
     else:
-        form = UpdateProfileForm(instance=request.user)
+        form = UpdateProfileForm(user=request.user)
 
     return render(request, "profile.html", {
         "form": form,

@@ -6,35 +6,49 @@ class LoginForm(forms.Form):
     username = forms.CharField(max_length=100)
     password = forms.CharField(widget=forms.PasswordInput)
 
-class UpdateProfileForm(forms.ModelForm):
-    avatar = forms.ImageField(required=False)
-    move_highlight_color = forms.CharField(required=False)
-    completed_move_color = forms.CharField(required=False)
+from django import forms
+from .models import UserProfile
 
-    class Meta:
-        model = User
-        fields = ['username', 'email']
+class UpdateProfileForm(forms.Form):
+    username = forms.CharField(max_length=150, required=True)
+    email = forms.EmailField(required=False)
+    avatar = forms.ImageField(required=False)
+    move_highlight_color = forms.CharField(max_length=7, required=False)
+    completed_move_color = forms.CharField(max_length=7, required=False)
 
     def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-        # Подтягиваем текущие цвета из профиля при открытии формы
-        if self.instance and self.instance.is_authenticated:
-            profile, _ = UserProfile.objects.get_or_create(user=self.instance)
+        
+        if self.user:
+            self.fields['username'].initial = self.user.username
+            self.fields['email'].initial = self.user.email
+            
+            profile, _ = UserProfile.objects.get_or_create(user=self.user)
             self.fields['move_highlight_color'].initial = profile.move_highlight_color
             self.fields['completed_move_color'].initial = profile.completed_move_color
 
-    def save(self, commit=True):
-        user = super().save(commit=commit)
-        profile, created = UserProfile.objects.get_or_create(user=user)
+    def save(self):
+        if not self.user:
+            return
         
-        if self.cleaned_data.get('avatar'):
-            profile.avatar = self.cleaned_data['avatar']
+        self.user.username = self.cleaned_data['username']
+        self.user.email = self.cleaned_data['email']
+        self.user.save()
+
+        profile, _ = UserProfile.objects.get_or_create(user=self.user)
+        
+        avatar = self.cleaned_data.get('avatar')
+        if avatar:
+            profile.avatar = avatar
             
-        if self.cleaned_data.get('move_highlight_color'):
-            profile.move_highlight_color = self.cleaned_data['move_highlight_color']
+        move_color = self.cleaned_data.get('move_highlight_color')
+        if move_color is not None:
+            profile.move_highlight_color = move_color
             
-        if self.cleaned_data.get('completed_move_color'):
-            profile.completed_move_color = self.cleaned_data['completed_move_color']
+        completed_color = self.cleaned_data.get('completed_move_color')
+        if completed_color is not None:
+            profile.completed_move_color = completed_color
             
         profile.save()
-        return user
+        return self.user

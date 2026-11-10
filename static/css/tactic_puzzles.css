@@ -5,9 +5,10 @@
     --text-color: #fff;
     --scroll-bg: rgba(0, 0, 0, 0.2);
     --move-num-color: #95a5a6;
-    --accent-line: #8b5cf6; /* Фиолетовый акцент под задачи */
-    --last-move-color: #76cc26; /* Цвет последнего хода по умолчанию */
-    --hint-color: #76cc26;      /* Цвет точек и колец хода */
+    --accent-line: #8b5cf6; 
+    --last-move-color: #76cc26; 
+    --hint-color: #e74c3c;      
+    --last-move-opacity: 0.42; 
 }
 
 /* Если включена светлая тема */
@@ -20,7 +21,7 @@ body.light-theme, html.light-theme {
     --accent-line: #7c3aed;
 }
 
-/* --- Главный контейнер страницы задач (по центру экрана) --- */
+/* --- Главный контейнер страницы задач --- */
 .chess-tactic-wrapper {
     width: 100%;
     display: flex;
@@ -47,7 +48,7 @@ body.light-theme, html.light-theme {
     font-size: 1.05rem;
 }
 
-/* --- Макет: доска слева, сайдбар строго справа в ряд --- */
+/* --- Макет --- */
 .chess-layout {
     display: flex;
     justify-content: center;
@@ -58,7 +59,6 @@ body.light-theme, html.light-theme {
     width: 100%;
 }
 
-/* --- Левая колонка с доской --- */
 .chess-board-column {
     width: 720px;
     flex-shrink: 0;
@@ -67,7 +67,6 @@ body.light-theme, html.light-theme {
     align-items: center;
 }
 
-/* --- Контейнер доски 720x720px --- */
 .chess-board-wrapper-inner {
     width: 720px !important;
     height: 720px !important;
@@ -94,7 +93,6 @@ body.light-theme, html.light-theme {
     max-width: inherit !important;
 }
 
-/* --- Панель управления под доской --- */
 .chess-controls {
     margin-top: 15px;
     display: flex;
@@ -110,7 +108,6 @@ body.light-theme, html.light-theme {
     font-size: 1.1em;
 }
 
-/* --- Кнопки управления --- */
 .chess-btn {
     padding: 10px 20px;
     font-size: 1.1em;
@@ -130,11 +127,6 @@ body.light-theme, html.light-theme {
     transform: translateY(-1px);
 }
 
-.chess-btn:active {
-    transform: translateY(0);
-}
-
-/* --- Правая колонка (сайдбар) --- */
 .chess-sidebar {
     width: 360px;
     background: var(--sidebar-bg);
@@ -148,7 +140,6 @@ body.light-theme, html.light-theme {
     justify-content: space-between;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     flex-shrink: 0;
-    margin-top: 0;
     color: var(--text-color);
     box-sizing: border-box;
 }
@@ -161,7 +152,6 @@ body.light-theme, html.light-theme {
     font-size: 1.2em;
 }
 
-/* --- Рамочка для списка ходов --- */
 .moves-list-scroll {
     max-height: 480px;
     overflow-y: auto;
@@ -183,7 +173,6 @@ body.light-theme, html.light-theme {
     margin: 20px 0;
 }
 
-/* --- Номера ходов --- */
 .move-number {
     color: var(--move-num-color);
     display: inline-block;
@@ -217,10 +206,9 @@ body.light-theme, html.light-theme {
 
 .highlight-last-move {
     background-color: var(--last-move-color) !important;
-
 }
 
-/* Точки для пустых полей (привязаны строго к клеткам доски) */
+/* Точка для пустых полей (по центру) */
 .square-55d63.hint-empty::after {
     content: "";
     position: absolute;
@@ -235,7 +223,7 @@ body.light-theme, html.light-theme {
     opacity: 0.85;
 }
 
-/* Кольца для взятия фигуры */
+/* Идеальное аккуратное кольцо для взятия фигуры */
 .square-55d63.hint-capture::after {
     content: "";
     position: absolute;
@@ -243,45 +231,15 @@ body.light-theme, html.light-theme {
     left: 0;
     width: 100%;
     height: 100%;
-    border: 5px solid var(--hint-color);
+    border: 6px solid var(--hint-color);
     border-radius: 50%;
     box-sizing: border-box;
     pointer-events: none;
+    z-index: 20;
     opacity: 0.85;
 }
 
-:root {
-    --last-move-color: #76cc26;
-    --last-move-opacity: 0.42; /* Прозрачность подсветки последнего хода */
+/* Убираем фоновую заливку клетки при взятии фигуры, оставляя только кольцо */
+.square-55d63.hint-capture {
+    background-color: transparent !important;
 }
-
-
-
-/* Маленькая точка для пустого поля с полупрозрачностью */
-.square-55d63.hint-empty::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 28%;
-    height: 28%;
-    background-color: var(--hint-color);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-}
-
-/* Кольцо для взятия фигуры с полупрозрачной рамкой */
-.square-55d63.hint-capture::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: 5px solid var(--hint-color);
-    border-radius: 50%;
-    box-sizing: border-box;
-    pointer-events: none;
-}
-

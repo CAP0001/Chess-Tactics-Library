@@ -142,7 +142,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            processPlayerMove(move);
+            board.position(game.fen(), true);
+
+            setTimeout(() => {
+                processPlayerMove(move);
+            }, 200); 
+
             selectedSquare = null;
             removeHighlights();
         }
